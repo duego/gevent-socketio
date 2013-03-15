@@ -29,7 +29,7 @@ class BaseTransport(object):
             l = len(data)
             self.handler.provided_content_length = l
             self.handler.response_headers.append(('Content-Length', l))
-            
+
         self.handler.write(data)
 
     def start_response(self, status, headers, **kwargs):
@@ -244,7 +244,10 @@ class WebsocketTransport(BaseTransport):
 
         def read_from_ws():
             while True:
-                message = websocket.receive()
+                try:
+                    message = websocket.receive()
+                except WebSocketError:
+                    message = None
 
                 if message is None:
                     break
@@ -272,11 +275,11 @@ class HTMLFileTransport(XHRPollingTransport):
 
     def write_packed(self, data):
         self.write("<script>_('%s');</script>" % data)
-        
+
     def write(self, data):
         l = 1024 * 5
         super(HTMLFileTransport, self).write("%d\r\n%s%s\r\n" % (l, data, " " * (l - len(data))))
-        
+
     def connect(self, socket, request_method):
         socket.connection_confirmed = True
         return super(HTMLFileTransport, self).connect(socket, request_method)
@@ -289,7 +292,7 @@ class HTMLFileTransport(XHRPollingTransport):
         ])
         self.write("<html><body><script>var _ = function (msg) { parent.s._(msg, document); };</script>")
         self.write_packed("1::")  # 'connect' packet
-        
+
 
         def chunk():
             while True:
