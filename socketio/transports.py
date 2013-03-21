@@ -240,14 +240,16 @@ class WebsocketTransport(BaseTransport):
                 try:
                     websocket.send(message)
                 except WebSocketError:
-                    socket.disconnect()
+                    gevent.spawn(socket.disconnect)
+                    break
 
         def read_from_ws():
             while True:
                 try:
                     message = websocket.receive()
                 except WebSocketError:
-                    message = None
+                    gevent.spawn(socket.disconnect)
+                    break
 
                 if message is None:
                     break
