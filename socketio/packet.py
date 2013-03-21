@@ -112,8 +112,15 @@ def decode(rawstr, json_loads=default_json_loads):
     decoded_msg = {}
     split_data = rawstr.split(":", 3)
     msg_type = split_data[0]
-    msg_id = split_data[1]
-    endpoint = split_data[2]
+    if len(split_data) > 1:
+        msg_id = split_data[1]
+    else:
+        msg_id = ''
+    if len(split_data) > 2:
+        endpoint = split_data[2]
+    else:
+        endpoint = ''
+
 
     data = ''
 

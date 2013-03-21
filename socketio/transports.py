@@ -255,8 +255,7 @@ class WebsocketTransport(BaseTransport):
                 if message is None:
                     break
                 else:
-                    if message is not None:
-                        socket.put_server_msg(message)
+                    socket.put_server_msg(message)
             print '%s read_from_ws finished' % socket
 
         gr1 = gevent.spawn(send_into_ws)
