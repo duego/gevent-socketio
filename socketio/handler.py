@@ -65,7 +65,7 @@ class SocketIOHandler(WSGIHandler):
 
     def write_smart(self, data):
         args = urlparse.parse_qs(self.environ.get("QUERY_STRING"))
-        
+
         if "jsonp" in args:
             self.write_jsonp_result(data, args["jsonp"][0])
         else:
@@ -103,7 +103,6 @@ class SocketIOHandler(WSGIHandler):
         # Setup the transport and socket
         transport = self.handler_types.get(request_tokens["transport_id"])
         sessid = request_tokens["sessid"]
-        socket = self.server.get_socket(sessid)
 
         # In case this is WebSocket request, switch to the WebSocketHandler
         # FIXME: fix this ugly class change
@@ -115,6 +114,7 @@ class SocketIOHandler(WSGIHandler):
             self.handle_one_response()
 
         # Make the socket object available for WSGI apps
+        socket = self.server.get_socket(sessid)
         self.environ['socketio'] = socket
 
         # Create a transport and handle the request likewise

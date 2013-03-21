@@ -223,23 +223,24 @@ class Socket(object):
         """
         # Clear out the callbacks
         self.ack_callbacks = {}
+        print '%s Kill' % self
+        self.server_queue.put_nowait(None)
+        self.client_queue.put_nowait(None)
+
         if self.connected:
-            print '%s Kill' % self
             self.state = self.STATE_DISCONNECTING
-            self.server_queue.put_nowait(None)
-            self.client_queue.put_nowait(None)
             if len(self.active_ns) > 0:
                 log.debug("Calling disconnect() on %s" % self)
                 self.disconnect()
-
-            log.debug("Removing %s from server sockets" % self)
-            if self.sessid in self.server.sockets:
-                self.server.sockets.pop(self.sessid)
-
-            gevent.killall(self.jobs)
-            print '%s Killed' % self
         else:
-            raise Exception('Socket kill()ed before being connected')
+            log.error('Socket kill()ed before being connected')
+
+        log.debug("Removing %s from server sockets" % self)
+        if self.sessid in self.server.sockets:
+            self.server.sockets.pop(self.sessid)
+
+        gevent.killall(self.jobs)
+        print '%s Killed' % self
 
     def put_server_msg(self, msg):
         """Writes to the server's pipe, to end up in in the Namespaces"""
@@ -462,6 +463,7 @@ class Socket(object):
         if self.timeout.wait(10.0):
             gevent.spawn(self._disconnect_timeout)
         elif self.connected:
+            print '%s Timed out' % self
             self.kill()
 
     def _spawn_heartbeat(self):

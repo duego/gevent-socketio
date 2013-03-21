@@ -101,9 +101,6 @@ class SocketIOServer(WSGIServer):
 
             print "Server states: %r" % states
             gevent.sleep(5)
-        #print "%s status: Connected: %r, State: %r, Jobs: %d, Total sockets: %d" % (
-        #    self, self.connected, self.state, len(self.jobs), len(self.server.sockets))
-
 
 def serve(app, **kw):
     _quiet = kw.pop('_quiet', False)

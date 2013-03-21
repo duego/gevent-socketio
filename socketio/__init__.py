@@ -5,7 +5,6 @@ import gevent
 
 log = logging.getLogger(__name__)
 
-
 def socketio_manage(environ, namespaces, request=None, error_handler=None,
                     json_loads=None, json_dumps=None):
     """Main SocketIO management function, call from within your Framework of
@@ -21,7 +20,7 @@ def socketio_manage(environ, namespaces, request=None, error_handler=None,
     use Socket.GLOBAL_NS to be more explicit. So it would look like:
 
     .. code-block:: python
-    
+
       namespaces={'': GlobalNamespace,
                   '/chat': ChatNamespace}
 
@@ -51,7 +50,7 @@ def socketio_manage(environ, namespaces, request=None, error_handler=None,
 
       def my_view(request):
           socketio_manage(request.environ, {'': GlobalNamespace}, request)
-    
+
     NOTE: You must understand that this function is going to be called
     *only once* per socket opening, *even though* you are using a long
     polling mechanism.  The subsequent calls (for long polling) will
