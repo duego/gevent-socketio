@@ -75,7 +75,7 @@ class Socket(object):
 
     def __init__(self, server, error_handler=None):
         self.server = weakref.proxy(server)
-        self.sessid = str(random.random())[2:]
+        self.sessid = Socket.generate_sessid()
         self.session = {}  # the session dict, for general developer usage
         self.client_queue = Queue()  # queue for messages to client
         self.server_queue = Queue()  # queue for messages to server
@@ -196,6 +196,10 @@ class Socket(object):
     def connected(self):
         """Returns whether the state is CONNECTED or not."""
         return self.state == self.STATE_CONNECTED
+
+    @staticmethod
+    def generate_sessid():
+        return str(random.random())[2:]
 
     def incr_hits(self):
         self.hits += 1

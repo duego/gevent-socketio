@@ -1,3 +1,4 @@
+import os
 import sys
 import traceback
 import gevent
@@ -99,7 +100,7 @@ class SocketIOServer(WSGIServer):
                 else:
                     states[socket.state] = 1
 
-            print "Server states: %r" % states
+            print "Server %s states: %r" % (os.getpid(), states)
             gevent.sleep(5)
 
 def serve(app, **kw):

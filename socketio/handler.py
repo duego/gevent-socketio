@@ -5,6 +5,7 @@ import urlparse
 
 from gevent.pywsgi import WSGIHandler
 from socketio import transports
+from socketio import virtsocket
 from geventwebsocket.handler import WebSocketHandler
 
 
@@ -43,8 +44,8 @@ class SocketIOHandler(WSGIHandler):
         if tokens["resource"] != self.server.resource:
             self.log_error("socket.io URL mismatch")
         else:
-            socket = self.server.get_socket()
-            data = "%s:15:10:%s" % (socket.sessid, ",".join(self.transports))
+            sessid = virtsocket.Socket.generate_sessid()
+            data = "%s:15:10:%s" % (sessid, ",".join(self.transports))
             self.write_smart(data)
 
     def write_jsonp_result(self, data, wrapper="0"):
@@ -93,7 +94,6 @@ class SocketIOHandler(WSGIHandler):
             request_tokens = request_tokens.groupdict()
         else:
             handshake_tokens = self.RE_HANDSHAKE_URL.match(path)
-
             if handshake_tokens:
                 return self._do_handshake(handshake_tokens.groupdict())
             else:
