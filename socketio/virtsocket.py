@@ -213,6 +213,7 @@ class Socket(object):
 
         This clear the heartbeat disconnect timeout (resets for X seconds).
         """
+        print '%s heartbeat' % self
         self.timeout.set()
 
     def kill(self):
@@ -253,7 +254,6 @@ class Socket(object):
 
     def put_client_msg(self, msg):
         """Writes to the client's pipe, to end up in the browser"""
-        self.heartbeat()
         self.client_queue.put_nowait(msg)
 
     def get_client_msg(self, **kwargs):
