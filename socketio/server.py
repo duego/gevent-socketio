@@ -1,5 +1,6 @@
 import sys
 import traceback
+import gevent
 
 from socket import error
 
@@ -31,6 +32,8 @@ class SocketIOServer(WSGIServer):
             is set to true.  The default value is 0.0.0.0:843
         """
         self.sockets = {}
+        gevent.spawn(self.status)
+
         if 'namespace' in kwargs:
             print("DEPRECATION WARNING: use resource instead of namespace")
             self.resource = kwargs.pop('namespace', 'socket.io')
@@ -87,6 +90,20 @@ class SocketIOServer(WSGIServer):
 
         return socket
 
+    def status(self):
+        while True:
+            states = {}
+            for socket in self.sockets.itervalues():
+                if socket.state in states.keys():
+                    states[socket.state] += 1
+                else:
+                    states[socket.state] = 1
+
+            print "Server states: %r" % states
+            gevent.sleep(5)
+        #print "%s status: Connected: %r, State: %r, Jobs: %d, Total sockets: %d" % (
+        #    self, self.connected, self.state, len(self.jobs), len(self.server.sockets))
+
 
 def serve(app, **kw):
     _quiet = kw.pop('_quiet', False)
@@ -121,7 +138,6 @@ def serve(app, **kw):
     if not _quiet:
         print('serving on http://%s:%s' % (host, port))
     server.serve_forever()
-
 
 def serve_paste(app, global_conf, **kw):
     """pserve / paster serve / waitress replacement / integration

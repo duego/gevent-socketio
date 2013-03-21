@@ -93,6 +93,7 @@ class Socket(object):
         self.active_ns = {}  # Namespace sessions that were instantiated
         self.jobs = []
         self.error_handler = default_error_handler
+
         if error_handler is not None:
             self.error_handler = error_handler
 
@@ -223,6 +224,7 @@ class Socket(object):
         # Clear out the callbacks
         self.ack_callbacks = {}
         if self.connected:
+            print '%s Kill' % self
             self.state = self.STATE_DISCONNECTING
             self.server_queue.put_nowait(None)
             self.client_queue.put_nowait(None)
@@ -235,6 +237,7 @@ class Socket(object):
                 self.server.sockets.pop(self.sessid)
 
             gevent.killall(self.jobs)
+            print '%s Killed' % self
         else:
             raise Exception('Socket kill()ed before being connected')
 
@@ -345,7 +348,9 @@ class Socket(object):
         """
 
         while True:
+            print '%s waiting to receive' % self
             rawdata = self.get_server_msg()
+            print '%s received: %r' % (self, rawdata)
 
             if not rawdata:
                 continue  # or close the connection ?
@@ -428,6 +433,7 @@ class Socket(object):
 
             if not self.connected:
                 # Killing Socket-level jobs
+                print "%s Watcher is killing %d jobs" % (self, len(self.jobs))
                 gevent.killall(self.jobs)
                 for ns_name, ns in list(self.active_ns.iteritems()):
                     ns.recv_disconnect()

@@ -242,6 +242,7 @@ class WebsocketTransport(BaseTransport):
                 except WebSocketError:
                     gevent.spawn(socket.disconnect)
                     break
+            print '%s send_into_ws finished' % socket
 
         def read_from_ws():
             while True:
@@ -256,6 +257,7 @@ class WebsocketTransport(BaseTransport):
                 else:
                     if message is not None:
                         socket.put_server_msg(message)
+            print '%s read_from_ws finished' % socket
 
         gr1 = gevent.spawn(send_into_ws)
         gr2 = gevent.spawn(read_from_ws)
