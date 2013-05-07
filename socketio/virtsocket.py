@@ -213,7 +213,6 @@ class Socket(object):
 
         This clear the heartbeat disconnect timeout (resets for X seconds).
         """
-        print '%s heartbeat' % self
         self.timeout.set()
 
     def kill(self):
@@ -228,7 +227,6 @@ class Socket(object):
         """
         # Clear out the callbacks
         self.ack_callbacks = {}
-        print '%s Kill' % self
         self.server_queue.put_nowait(None)
         self.client_queue.put_nowait(None)
 
@@ -245,7 +243,6 @@ class Socket(object):
             self.server.sockets.pop(self.sessid)
 
         gevent.killall(self.jobs)
-        print '%s Killed' % self
 
     def put_server_msg(self, msg):
         """Writes to the server's pipe, to end up in in the Namespaces"""
@@ -353,9 +350,7 @@ class Socket(object):
         """
 
         while True:
-            print '%s waiting to receive' % self
             rawdata = self.get_server_msg()
-            print '%s received: %r' % (self, rawdata)
 
             if not rawdata:
                 continue  # or close the connection ?
@@ -438,7 +433,6 @@ class Socket(object):
 
             if not self.connected:
                 # Killing Socket-level jobs
-                print "%s Watcher is killing %d jobs" % (self, len(self.jobs))
                 gevent.killall(self.jobs)
                 for ns_name, ns in list(self.active_ns.iteritems()):
                     ns.recv_disconnect()
@@ -467,7 +461,6 @@ class Socket(object):
         if self.timeout.wait(10.0):
             gevent.spawn(self._disconnect_timeout)
         elif self.connected:
-            print '%s Timed out' % self
             self.kill()
 
     def _spawn_heartbeat(self):
