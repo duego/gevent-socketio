@@ -17,12 +17,12 @@ class GeventSocketIOBaseWorker(GeventPyWSGIWorker):
             self.cfg.workers > 1
 
         server = self.server_class(
-            self.socket
-            , self.wsgi
-            , spawn=pool
-            , resource=self.resource
-            , policy_server=self.policy_server
-        )
+            self.socket,
+            self.wsgi,
+            spawn=pool,
+            resource=self.resource,
+            policy_server=self.policy_server,
+            transports=self.transports)
 
         server.start()
         try:
@@ -60,3 +60,4 @@ class GeventSocketIOWorker(GeventSocketIOBaseWorker):
     # for now this is just a proof of concept to make sure this will work
     resource = 'socket.io'
     policy_server = False  # Don't run the flash policy server
+    transports = ['websocket']
